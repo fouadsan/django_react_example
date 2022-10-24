@@ -1,12 +1,57 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { useDispatch } from "react-redux";
 
-function UpdateForm() {
-  const [email, setEmail] = useState("");
-  const [fname, setFname] = useState("");
-  const [lname, setLname] = useState("");
-  const [phone, setPhone] = useState("");
-  const [clinic, setClinic] = useState("");
+import { createDoctor } from "../store/actions/doctors";
+
+import { updateDoctor } from "../store/actions/doctors";
+
+function DoctorForm({ doctor }) {
+  let emailVal = "";
+  let fnameVal = "";
+  let lnameVal = "";
+  let phoneVal = "";
+  let clinicVal = "";
+
+  if (doctor) {
+    emailVal = doctor.email;
+    fnameVal = doctor.first_name;
+    lnameVal = doctor.last_name;
+    phoneVal = doctor.phone_number;
+    clinicVal = doctor.clinic;
+  }
+
+  const [email, setEmail] = useState(emailVal);
+  const [fname, setFname] = useState(fnameVal);
+  const [lname, setLname] = useState(lnameVal);
+  const [phone, setPhone] = useState(phoneVal);
+  const [clinic, setClinic] = useState(clinicVal);
+
+  const dispatch = useDispatch();
+
+  const handleCreateDoctor = () => {
+    dispatch(
+      createDoctor({
+        email,
+        first_name: fname,
+        last_name: lname,
+        phone_number: phone,
+        clinic,
+      })
+    );
+  };
+
+  const handleUpdateDoctor = () => {
+    dispatch(
+      updateDoctor(doctor.id, {
+        email,
+        first_name: fname,
+        last_name: lname,
+        phone_number: phone,
+        clinic,
+      })
+    );
+  };
 
   return (
     <Wrapper>
@@ -60,7 +105,15 @@ function UpdateForm() {
           required
         />
       </div>
-      <button type="submit">Update</button>
+      {doctor ? (
+        <button type="button" onClick={handleUpdateDoctor}>
+          Update
+        </button>
+      ) : (
+        <button type="button" onClick={handleCreateDoctor}>
+          Create
+        </button>
+      )}
     </Wrapper>
   );
 }
@@ -85,4 +138,4 @@ const Wrapper = styled.form`
   }
 `;
 
-export default UpdateForm;
+export default DoctorForm;

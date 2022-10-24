@@ -1,8 +1,19 @@
 import Navbar from "./Navbar";
 import DoctorItem from "./DoctorItem";
-import UpdateModal from "./Modal";
-import UpdateForm from "./DoctorForm";
+import Modal from "./Modal";
+import DoctorForm from "./DoctorForm";
 import Loading from "./Loading";
 import Alert from "./Alert";
+import Search from "./Search";
+import PaginationCmp from "./PaginationCmp";
 
-export { Navbar, DoctorItem, UpdateModal, UpdateForm, Loading, Alert };
+export {
+  Navbar,
+  DoctorItem,
+  Modal,
+  DoctorForm,
+  Loading,
+  Alert,
+  Search,
+  PaginationCmp,
+};

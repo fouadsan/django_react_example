@@ -1,17 +1,43 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
+import { useSelector, useDispatch } from "react-redux";
 
-import UpdateForm from "./DoctorForm";
+import { Loading, Alert } from "../components";
+import DoctorForm from "./DoctorForm";
+import { getSingleDoctor } from "../store/actions/singleDoctor";
 
-function UpdateModal({ onClose }) {
+function Modal({ id, closeModal }) {
+  const {
+    doctor_loading: loading,
+    doctor_error: error,
+    doctor,
+  } = useSelector((state) => state.singleDoctor);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (id) {
+      dispatch(getSingleDoctor(id));
+    }
+  }, [dispatch, id]);
+
   return (
     <Wrapper>
       <div className="modal-container">
-        <div className="msg-container">
-          <UpdateForm />
-        </div>
-        <button className="close-modal-btn" onClick={onClose}>
-          {/* <button className="close-modal-btn" onClick={closeModal}> */}
+        {loading ? (
+          <div>
+            <Loading />
+          </div>
+        ) : error.status ? (
+          <div>
+            <Alert type={"danger"} text={error.msg} />
+          </div>
+        ) : (
+          <div>
+            <DoctorForm doctor={doctor} />
+          </div>
+        )}
+        <button className="close-modal-btn" onClick={closeModal}>
           close
         </button>
       </div>
@@ -52,4 +78,4 @@ const Wrapper = styled.div`
   }
 `;
 
-export default UpdateModal;
+export default Modal;

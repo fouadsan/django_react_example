@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { combineReducers, applyMiddleware } from "redux";
+import { combineReducers } from "redux";
 
 import { doctorsReducer } from "./reducers/doctors";
+import { singleDoctorReducer } from "./reducers/singleDoctor";
 import { modalReducer } from "./reducers/modal";
 
 const rootReducer = combineReducers({
   doctors: doctorsReducer,
+  singleDoctor: singleDoctorReducer,
   modal: modalReducer,
 });
 

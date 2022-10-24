@@ -1,30 +1,44 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useSelector, useDispatch } from "react-redux";
 
-import * as doctorsActions from "../store/actions/doctors";
+import { fetchDoctors, deleteDoctor } from "../store/actions/doctors";
 import * as modalActions from "../store/actions/modal";
-import { Loading, Alert, DoctorItem, UpdateModal } from "../components";
+import {
+  Loading,
+  Alert,
+  DoctorItem,
+  Modal,
+  Search,
+  PaginationCmp,
+} from "../components";
 
 function Homepage() {
   const {
     doctors_loading: loading,
     doctors_error: error,
     doctors,
+    message,
   } = useSelector((state) => state.doctors);
 
-  const { is_open } = useSelector((state) => state.modal);
+  const { is_open, id } = useSelector((state) => state.modal);
+
+  const [searchValue, setSearchValue] = useState("");
+
+  const [pagination, setPagination] = useState({
+    next: null,
+    previous: null,
+  });
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(doctorsActions.fetchDoctors());
-  }, [dispatch]);
+    dispatch(fetchDoctors(searchValue, pagination));
+  }, [dispatch, doctors.list.length, searchValue, pagination, message]);
 
   const handleDelete = (docId) => {
     if (window.confirm("Are you sure you want to delete this doctor")) {
-      // dispatch(deleteUser(userId));
-      console.log(`deleted doctor ${docId}`);
+      dispatch(deleteDoctor(docId));
     }
   };
 
@@ -33,8 +47,7 @@ function Homepage() {
   };
 
   const handleUpdate = (docId) => {
-    console.log(`updated doctor ${docId}`);
-    dispatch(modalActions.openModal());
+    dispatch(modalActions.openModal(docId));
   };
 
   const handleOnClose = () => {
@@ -44,8 +57,9 @@ function Homepage() {
   return (
     <Wrapper className="page">
       <div className="page-container">
-        {is_open && <UpdateModal onClose={handleOnClose} />}
+        {is_open && <Modal id={id} closeModal={handleOnClose} />}
         <h2>CRUD APP using DRF & React JS</h2>
+        <Search searchValue={searchValue} setSearchValue={setSearchValue} />
         {loading ? (
           <div>
             <Loading />
@@ -55,38 +69,47 @@ function Homepage() {
             <Alert type={"danger"} text={error.msg} />
           </div>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>EMAIL</th>
-                <th>FNAME</th>
-                <th>LNAME</th>
-                <th>PHONE</th>
-                <th>CLINIC</th>
-                <th>
-                  <button type="button" onClick={handleCreate}>
-                    Add Doctor
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {doctors.length
-                ? doctors.map((doc) => {
-                    return (
-                      <DoctorItem
-                        key={JSON.stringify(doc.id)}
-                        doc={doc}
-                        handleDelete={handleDelete}
-                        handleUpdate={handleUpdate}
-                      />
-                    );
-                  })
-                : null}
-            </tbody>
-          </table>
+          <>
+            {message && <Alert type={"success"} text={message} />}
+
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>EMAIL</th>
+                  <th>FNAME</th>
+                  <th>LNAME</th>
+                  <th>PHONE</th>
+                  <th>CLINIC</th>
+                  <th>
+                    <button type="button" onClick={handleCreate}>
+                      Add Doctor
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {doctors.list.length
+                  ? doctors.list.map((doc) => {
+                      return (
+                        <DoctorItem
+                          key={doc.id}
+                          doc={doc}
+                          handleDelete={handleDelete}
+                          handleUpdate={handleUpdate}
+                        />
+                      );
+                    })
+                  : null}
+              </tbody>
+            </table>
+          </>
         )}
+        <PaginationCmp
+          nextUrl={doctors.next}
+          previousUrl={doctors.previous}
+          setPagination={setPagination}
+        />
       </div>
     </Wrapper>
   );

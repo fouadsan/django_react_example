@@ -12,6 +12,7 @@ function Alert({ type, text }) {
 const Wrapper = styled.div`
   width: 700px;
   padding: 1rem;
+  margin-bottom: 1rem;
   display: flex;
   justify-content: center;
   background-color: ${(props) => (props.type === "danger" ? "red" : "green")};
